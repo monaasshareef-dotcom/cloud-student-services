@@ -36,6 +36,9 @@ app.use((req, res, next) => {
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Trust Proxy for PaaS Cloud Environment (Vercel/Render)
+app.set('trust proxy', 1);
+
 // Session Setup
 app.use(session({
     name: 'sid',
