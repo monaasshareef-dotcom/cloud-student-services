@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: cloud-student-services
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: cloud-student-db
+          property: connectionString
+
+databases:
+  - name: cloud-student-db
+    plan: free
+    databaseName: cloud_student_db
+    user: postgres
