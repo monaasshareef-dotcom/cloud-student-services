@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cloud Student Services | Cloud Computing & PaaS</title>
+    <meta name="description" content="Cloud-Based Student Services System for university course registration and administration.">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Main Design System CSS -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- Toast Notification Overlay Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- ==========================================================================
+         1. LOGIN VIEW (Split Screen Layout)
+         ========================================================================== -->
+    <div id="login-view" class="login-container">
+        <div class="login-left">
+            <div class="cloud-graphic">
+                <i class="fa-solid fa-cloud"></i>
+            </div>
+            <h1 class="login-brand-title" data-i18n="appName">Cloud Student Services</h1>
+            <p class="login-brand-subtitle" data-i18n="appSubtitle">
+                A cloud-native academic platform for seamless course registration and student administration.
+            </p>
+        </div>
+        <div class="login-right">
+            <div class="login-card">
+                <div class="login-card-header" style="display: flex; justify-content: space-between; align-items: flex-start;">
+                    <div>
+                        <h2 class="login-card-title" data-i18n="welcomeBack">Welcome Back</h2>
+                        <p class="login-card-sub" data-i18n="pleaseSignIn">Please sign in to access your portal</p>
+                    </div>
+                    <button id="login-lang-toggle-btn" type="button" class="btn btn-secondary btn-sm">
+                        <i class="fa-solid fa-globe"></i> <span id="login-lang-toggle-label">العربية</span>
+                    </button>
+                </div>
+
+                <form id="login-form">
+                    <div class="form-group">
+                        <label class="form-label" for="login-email" data-i18n="emailAddress">Email Address</label>
+                        <input type="email" id="login-email" class="form-control" placeholder="name@example.com" required autocomplete="email">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="login-password" data-i18n="password">Password</label>
+                        <input type="password" id="login-password" class="form-control" placeholder="••••••••" required autocomplete="current-password">
+                    </div>
+
+                    <button type="submit" id="login-btn" class="btn btn-primary" style="width: 100%; margin-top: var(--space-4);">
+                        <span data-i18n="signIn">Sign In</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </form>
+
+                <div style="margin-top: var(--space-6); padding-top: var(--space-4); border-top: 1px solid var(--border); font-size: 12px; color: var(--text-secondary);">
+                    <p style="font-weight: 600; margin-bottom: 4px;" data-i18n="demoCredentials">Demo Credentials:</p>
+                    <p>• <span data-i18n="admin">Admin</span>: <b>admin@example.com</b> / <b>admin123</b></p>
+                    <p>• <span data-i18n="student">Student</span>: <b>student@example.com</b> / <b>student123</b></p>
+                    <div style="margin-top: 10px; padding: 8px 10px; background: rgba(37, 99, 235, 0.08); border: 1px solid rgba(37, 99, 235, 0.2); border-radius: 6px; font-size: 11.5px; color: #1e40af; display: flex; align-items: center; gap: 6px;">
+                        <i class="fa-solid fa-circle-info"></i>
+                        <span data-i18n="serverRunningTip">Tip: To connect to live Node.js server, launch تشغيل_السيرفر.bat and open http://localhost:3000.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==========================================================================
+         2. MAIN APP LAYOUT (Sidebar + Top Header + Dynamic Content)
+         ========================================================================== -->
+    <div id="app-layout" class="app-layout" style="display: none;">
+        
+        <!-- SIDEBAR (240px) -->
+        <aside id="sidebar" class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo-icon">
+                    <i class="fa-solid fa-cloud"></i>
+                </div>
+                <div class="sidebar-logo-text" data-i18n="appName">
+                    Cloud Student Services
+                </div>
+            </div>
+
+            <!-- Student Navigation Menu -->
+            <nav id="student-nav" class="sidebar-nav" style="display: none;">
+                <div class="nav-item active" data-view="student-dashboard">
+                    <i class="fa-solid fa-chart-line"></i>
+                    <span data-i18n="navDashboard">Dashboard</span>
+                </div>
+                <div class="nav-item" data-view="student-courses">
+                    <i class="fa-solid fa-book-open"></i>
+                    <span data-i18n="navCourses">Available Courses</span>
+                </div>
+                <div class="nav-item" data-view="student-requests">
+                    <i class="fa-solid fa-paper-plane"></i>
+                    <span data-i18n="navMyRequests">My Requests</span>
+                </div>
+            </nav>
+
+            <!-- Admin Navigation Menu -->
+            <nav id="admin-nav" class="sidebar-nav" style="display: none;">
+                <div class="nav-item active" data-view="admin-dashboard">
+                    <i class="fa-solid fa-chart-pie"></i>
+                    <span data-i18n="navDashboard">Dashboard</span>
+                </div>
+                <div class="nav-item" data-view="admin-students">
+                    <i class="fa-solid fa-users"></i>
+                    <span data-i18n="navManageStudents">Manage Students</span>
+                </div>
+                <div class="nav-item" data-view="admin-courses">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                    <span data-i18n="navManageCourses">Manage Courses</span>
+                </div>
+                <div class="nav-item" data-view="admin-requests">
+                    <i class="fa-solid fa-list-check"></i>
+                    <span data-i18n="navManageRequests">Manage Requests</span>
+                </div>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="nav-item" id="logout-btn">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                    <span data-i18n="signOut">Sign Out</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- MAIN WRAPPER -->
+        <div class="main-wrapper">
+            
+            <!-- TOP HEADER (64px) -->
+            <header class="top-header">
+                <div class="header-left">
+                    <button id="mobile-toggle" class="mobile-toggle">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                    <h2 id="page-title" class="page-title" data-i18n="navDashboard">Dashboard</h2>
+                </div>
+
+                <div class="header-right">
+                    <button id="header-lang-toggle-btn" type="button" class="btn btn-secondary btn-sm" style="margin-right: 8px;">
+                        <i class="fa-solid fa-globe"></i> <span id="header-lang-toggle-label">العربية</span>
+                    </button>
+                    <div class="user-profile">
+                        <div id="user-avatar" class="user-avatar">A</div>
+                        <div class="user-details">
+                            <span id="user-display-name" class="user-name">Ahmed Ali</span>
+                            <span id="user-display-role" class="user-role-badge">Student</span>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- CONTENT BODY -->
+            <main class="content-body">
+
+                <!-- -------------------------------------------------- -->
+                <!-- STUDENT VIEW 1: STUDENT DASHBOARD                  -->
+                <!-- -------------------------------------------------- -->
+                <section id="student-dashboard-view" class="view-section" style="display: none;">
+                    <div class="welcome-banner">
+                        <div>
+                            <h2 class="welcome-title"><span data-i18n="welcomeStudent">Welcome,</span> <span id="student-welcome-name">Ahmed</span> 👋</h2>
+                            <p class="welcome-sub" data-i18n="welcomeSubtitle">Student Portal & Course Registration Overview</p>
+                        </div>
+                    </div>
+
+                    <!-- Summary Cards -->
+                    <div class="metrics-grid">
+                        <div class="card">
+                            <div class="card-info">
+                                <span class="card-title" data-i18n="myCourses">My Courses</span>
+                                <span id="metric-student-courses" class="card-number">0</span>
+                            </div>
+                            <div class="card-icon-wrapper card-icon-blue">
+                                <i class="fa-solid fa-book"></i>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-info">
+                                <span class="card-title" data-i18n="totalRequests">Requests</span>
+                                <span id="metric-student-requests" class="card-number">0</span>
+                            </div>
+                            <div class="card-icon-wrapper card-icon-yellow">
+                                <i class="fa-solid fa-clock-rotate-left"></i>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-info">
+                                <span class="card-title" data-i18n="approvedCourses">Approved</span>
+                                <span id="metric-student-approved" class="card-number">0</span>
+                            </div>
+                            <div class="card-icon-wrapper card-icon-green">
+                                <i class="fa-solid fa-circle-check"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="quick-actions-card">
+                        <div class="section-header">
+                            <h3 class="section-title" data-i18n="navDashboard">Quick Actions</h3>
+                        </div>
+                        <div class="action-buttons-group">
+                            <button class="btn btn-primary nav-trigger" data-view="student-courses">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                                <span data-i18n="navCourses">Browse Courses</span>
+                            </button>
+                            <button class="btn btn-secondary nav-trigger" data-view="student-requests">
+                                <i class="fa-solid fa-list"></i>
+                                <span data-i18n="navMyRequests">My Requests</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Recent Requests Table -->
+                    <div class="table-container">
+                        <div class="table-toolbar">
+                            <h3 class="section-title" data-i18n="recentRequests">Recent Requests</h3>
+                        </div>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th data-i18n="courseCode">Course Code</th>
+                                    <th data-i18n="courseName">Course Name</th>
+                                    <th data-i18n="requestedDate">Date</th>
+                                    <th data-i18n="status">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="student-recent-requests-tbody">
+                                <!-- Dynamic Rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- -------------------------------------------------- -->
+                <!-- STUDENT VIEW 2: COURSES PAGE                       -->
+                <!-- -------------------------------------------------- -->
+                <section id="student-courses-view" class="view-section" style="display: none;">
+                    <div class="table-container">
+                        <div class="table-toolbar">
+                            <h3 class="section-title" data-i18n="navCourses">Available Academic Courses</h3>
+                            <div class="search-box">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                                <input type="text" id="search-student-courses" class="form-control search-input" placeholder="Search courses..." data-i18n-ph="searchCourses">
+                            </div>
+                        </div>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th data-i18n="courseCode">Course Code</th>
+                                    <th data-i18n="courseName">Course Name</th>
+                                    <th data-i18n="creditHours">Credits</th>
+                                    <th data-i18n="instructor">Instructor</th>
+                                    <th data-i18n="seats">Seats</th>
+                                    <th data-i18n="status">Status</th>
+                                    <th data-i18n="action">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="student-courses-tbody">
+                                <!-- Dynamic Rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- -------------------------------------------------- -->
+                <!-- STUDENT VIEW 3: MY REQUESTS PAGE                   -->
+                <!-- -------------------------------------------------- -->
+                <section id="student-requests-view" class="view-section" style="display: none;">
+                    <div class="table-container">
+                        <div class="table-toolbar">
+                            <h3 class="section-title" data-i18n="navMyRequests">My Registration Requests</h3>
+                        </div>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th data-i18n="courseName">Course</th>
+                                    <th data-i18n="requestedDate">Date</th>
+                                    <th data-i18n="status">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="student-my-requests-tbody">
+                                <!-- Dynamic Rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- -------------------------------------------------- -->
+                <!-- ADMIN VIEW 1: ADMIN DASHBOARD                      -->
+                <!-- -------------------------------------------------- -->
+                <section id="admin-dashboard-view" class="view-section" style="display: none;">
+                    <div class="welcome-banner">
+                        <div>
+                            <h2 class="welcome-title">Admin Control Panel 🛡️</h2>
+                            <p class="welcome-sub">System Management & Registration Requests Review</p>
+                        </div>
+                    </div>
+
+                    <!-- Metrics Grid -->
+                    <div class="metrics-grid">
+                        <div class="card">
+                            <div class="card-info">
+                                <span class="card-title" data-i18n="totalStudents">Total Students</span>
+                                <span id="metric-admin-students" class="card-number">0</span>
+                            </div>
+                            <div class="card-icon-wrapper card-icon-blue">
+                                <i class="fa-solid fa-users"></i>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-info">
+                                <span class="card-title" data-i18n="totalCourses">Total Courses</span>
+                                <span id="metric-admin-courses" class="card-number">0</span>
+                            </div>
+                            <div class="card-icon-wrapper card-icon-green">
+                                <i class="fa-solid fa-graduation-cap"></i>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-info">
+                                <span class="card-title" data-i18n="pendingRequests">Pending Requests</span>
+                                <span id="metric-admin-pending" class="card-number">0</span>
+                            </div>
+                            <div class="card-icon-wrapper card-icon-yellow">
+                                <i class="fa-solid fa-clock"></i>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-info">
+                                <span class="card-title" data-i18n="approvedRequests">Approved Requests</span>
+                                <span id="metric-admin-approved" class="card-number">0</span>
+                            </div>
+                            <div class="card-icon-wrapper card-icon-blue">
+                                <i class="fa-solid fa-check-double"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Requests Table -->
+                    <div class="table-container">
+                        <div class="table-toolbar">
+                            <h3 class="section-title" data-i18n="recentRequests">Recent Registration Requests</h3>
+                            <button class="btn btn-secondary btn-sm nav-trigger" data-view="admin-requests">
+                                <span data-i18n="navManageRequests">View All Requests</span>
+                                <i class="fa-solid fa-arrow-right"></i>
+                            </button>
+                        </div>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th data-i18n="student">Student</th>
+                                    <th data-i18n="courseName">Course</th>
+                                    <th data-i18n="requestedDate">Date</th>
+                                    <th data-i18n="status">Status</th>
+                                    <th data-i18n="action">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-dashboard-requests-tbody">
+                                <!-- Dynamic Rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- -------------------------------------------------- -->
+                <!-- ADMIN VIEW 2: MANAGE STUDENTS                      -->
+                <!-- -------------------------------------------------- -->
+                <section id="admin-students-view" class="view-section" style="display: none;">
+                    <div class="table-container">
+                        <div class="table-toolbar">
+                            <button id="open-add-student-btn" class="btn btn-primary">
+                                <i class="fa-solid fa-plus"></i>
+                                <span data-i18n="addStudent">Add Student</span>
+                            </button>
+                            <div class="search-box">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                                <input type="text" id="search-admin-students" class="form-control search-input" placeholder="Search students..." data-i18n-ph="searchStudents">
+                            </div>
+                        </div>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th data-i18n="studentId">Student ID</th>
+                                    <th data-i18n="fullName">Full Name</th>
+                                    <th data-i18n="emailAddress">Email</th>
+                                    <th data-i18n="department">Department</th>
+                                    <th data-i18n="level">Level</th>
+                                    <th data-i18n="action">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-students-tbody">
+                                <!-- Dynamic Rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- -------------------------------------------------- -->
+                <!-- ADMIN VIEW 3: MANAGE COURSES                       -->
+                <!-- -------------------------------------------------- -->
+                <section id="admin-courses-view" class="view-section" style="display: none;">
+                    <div class="table-container">
+                        <div class="table-toolbar">
+                            <button id="open-add-course-btn" class="btn btn-primary">
+                                <i class="fa-solid fa-plus"></i>
+                                <span data-i18n="addCourse">Add Course</span>
+                            </button>
+                            <div class="search-box">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                                <input type="text" id="search-admin-courses" class="form-control search-input" placeholder="Search courses..." data-i18n-ph="searchCourses">
+                            </div>
+                        </div>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th data-i18n="courseCode">Course Code</th>
+                                    <th data-i18n="courseName">Course Name</th>
+                                    <th data-i18n="creditHours">Credit Hours</th>
+                                    <th data-i18n="instructor">Instructor</th>
+                                    <th data-i18n="availableSeats">Available Seats</th>
+                                    <th data-i18n="status">Status</th>
+                                    <th data-i18n="action">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-courses-tbody">
+                                <!-- Dynamic Rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- -------------------------------------------------- -->
+                <!-- ADMIN VIEW 4: MANAGE REQUESTS                      -->
+                <!-- -------------------------------------------------- -->
+                <section id="admin-requests-view" class="view-section" style="display: none;">
+                    <div class="table-container">
+                        <div class="table-toolbar">
+                            <h3 class="section-title" data-i18n="navManageRequests">Registration Requests Management</h3>
+                        </div>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th data-i18n="student">Student</th>
+                                    <th data-i18n="courseName">Course</th>
+                                    <th data-i18n="requestedDate">Request Date</th>
+                                    <th data-i18n="status">Status</th>
+                                    <th data-i18n="action">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-requests-tbody">
+                                <!-- Dynamic Rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- ==========================================================================
+         MODALS SYSTEM
+         ========================================================================== -->
+
+    <!-- Modal 1: Request Registration Modal (Student) -->
+    <div id="request-course-modal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title" data-i18n="confirmCourseTitle">Confirm Course Request</h3>
+                <button class="modal-close closeModalBtn"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <p style="margin-bottom: var(--space-4); color: var(--text-secondary);" data-i18n="confirmCourseMsg">Are you sure you want to submit a registration request for this course?</p>
+                <div style="background: var(--bg); padding: var(--space-4); border-radius: var(--radius-md); border: 1px solid var(--border);">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <span style="color: var(--text-secondary);" data-i18n="courseCode">Course Code:</span>
+                        <strong id="modal-course-code">CS101</strong>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <span style="color: var(--text-secondary);" data-i18n="courseName">Course Name:</span>
+                        <strong id="modal-course-name">Intro to CS</strong>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <span style="color: var(--text-secondary);" data-i18n="creditHours">Credit Hours:</span>
+                        <strong id="modal-course-credits">3 Hours</strong>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span style="color: var(--text-secondary);" data-i18n="instructor">Instructor:</span>
+                        <strong id="modal-course-instructor">Dr. Smith</strong>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary closeModalBtn" data-i18n="cancel">Cancel</button>
+                <button id="confirm-submit-request-btn" class="btn btn-primary" data-i18n="submitRequest">Submit Request</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 2: Add / Edit Student Modal (Admin) -->
+    <div id="student-form-modal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="student-modal-title" class="modal-title" data-i18n="addStudent">Add Student</h3>
+                <button class="modal-close closeModalBtn"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form id="student-form">
+                <input type="hidden" id="student-form-id">
+                <div class="modal-body">
+                    <div class="form-grid-2">
+                        <div class="form-group">
+                            <label class="form-label"><span data-i18n="studentId">Student ID</span> *</label>
+                            <input type="text" id="student-form-number" class="form-control" placeholder="e.g. 2024001" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label"><span data-i18n="fullName">Full Name</span> *</label>
+                            <input type="text" id="student-form-name" class="form-control" placeholder="e.g. Ahmed Ali" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label"><span data-i18n="emailAddress">Email Address</span> *</label>
+                        <input type="email" id="student-form-email" class="form-control" placeholder="student@example.com" required>
+                    </div>
+
+                    <div class="form-grid-2">
+                        <div class="form-group">
+                            <label class="form-label"><span data-i18n="department">Department</span> *</label>
+                            <input type="text" id="student-form-dept" class="form-control" placeholder="Computer Science" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label"><span data-i18n="level">Level</span> *</label>
+                            <select id="student-form-level" class="form-control" required>
+                                <option value="Level 1">Level 1</option>
+                                <option value="Level 2">Level 2</option>
+                                <option value="Level 3">Level 3</option>
+                                <option value="Level 4">Level 4</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div id="student-password-container" class="form-group">
+                        <label class="form-label"><span data-i18n="accountPassword">Account Password</span> *</label>
+                        <input type="password" id="student-form-password" class="form-control" placeholder="••••••••">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary closeModalBtn" data-i18n="cancel">Cancel</button>
+                    <button type="submit" class="btn btn-primary" data-i18n="saveStudent">Save Student</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal 3: Add / Edit Course Modal (Admin) -->
+    <div id="course-form-modal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="course-modal-title" class="modal-title" data-i18n="addCourse">Add Course</h3>
+                <button class="modal-close closeModalBtn"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form id="course-form">
+                <input type="hidden" id="course-form-id">
+                <div class="modal-body">
+                    <div class="form-grid-2">
+                        <div class="form-group">
+                            <label class="form-label"><span data-i18n="courseCode">Course Code</span> *</label>
+                            <input type="text" id="course-form-code" class="form-control" placeholder="e.g. CS101" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label"><span data-i18n="creditHours">Credit Hours</span> *</label>
+                            <input type="number" id="course-form-credits" class="form-control" min="1" max="6" value="3" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label"><span data-i18n="courseName">Course Name</span> *</label>
+                        <input type="text" id="course-form-name" class="form-control" placeholder="Introduction to Programming" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label"><span data-i18n="instructor">Instructor</span> *</label>
+                        <input type="text" id="course-form-instructor" class="form-control" placeholder="Dr. Sarah Connor" required>
+                    </div>
+
+                    <div class="form-grid-2">
+                        <div class="form-group">
+                            <label class="form-label"><span data-i18n="availableSeats">Available Seats</span> *</label>
+                            <input type="number" id="course-form-seats" class="form-control" min="0" value="25" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label"><span data-i18n="status">Status</span> *</label>
+                            <select id="course-form-status" class="form-control" required>
+                                <option value="AVAILABLE" data-i18n="badgeAvailable">Available</option>
+                                <option value="UNAVAILABLE" data-i18n="badgeUnavailable">Unavailable</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary closeModalBtn" data-i18n="cancel">Cancel</button>
+                    <button type="submit" class="btn btn-primary" data-i18n="saveCourse">Save Course</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal 4: Confirmation Modal -->
+    <div id="confirm-delete-modal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title" data-i18n="deleteConfirmTitle">Confirm Delete</h3>
+                <button class="modal-close closeModalBtn"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <p id="delete-modal-message" style="color: var(--text-primary); font-size: 15px;" data-i18n="deleteConfirmMessage">Are you sure you want to delete this record? This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary closeModalBtn" data-i18n="cancel">Cancel</button>
+                <button id="confirm-delete-btn" class="btn btn-danger" data-i18n="delete">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dynamic JavaScript Application Engine -->
+    <script src="js/app.js"></script>
+</body>
+</html>
