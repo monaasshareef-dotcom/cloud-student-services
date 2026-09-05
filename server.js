@@ -86,8 +86,13 @@ app.use((err, req, res, next) => {
     });
 });
 
-// Initialize Database & Boot Web Server
-db.initDb().then(() => {
+// Initialize Database
+db.initDb().catch(err => {
+    console.error('Failed to initialize application database:', err);
+});
+
+// Boot Web Server in standalone mode
+if (require.main === module || process.env.NODE_ENV !== 'production') {
     app.listen(PORT, () => {
         console.log(`=======================================================`);
         console.log(` Cloud Student Services System is running!`);
@@ -96,6 +101,7 @@ db.initDb().then(() => {
         console.log(` Database Mode: ${db.isMemory ? 'Local Memory (No PG)' : 'PostgreSQL Connected'}`);
         console.log(`=======================================================`);
     });
-}).catch(err => {
-    console.error('Failed to initialize application database:', err);
-});
+}
+
+module.exports = app;
+
