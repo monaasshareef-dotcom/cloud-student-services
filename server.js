@@ -56,7 +56,8 @@ app.use(session({
 app.use(requestLogger);
 
 // Static Web Client Files
-app.use(express.static(path.join(__dirname, 'public')));
+const publicPath = path.join(process.cwd(), 'public');
+app.use(express.static(publicPath));
 
 // API Routes
 app.use('/api/auth', authRoutes);
@@ -65,7 +66,7 @@ app.use('/api/courses', courseRoutes);
 app.use('/api/requests', requestRoutes);
 app.use('/api/admin', adminRoutes);
 
-// Health Check Endpoint (For Cloud Deployment Monitoring on Render)
+// Health Check Endpoint
 app.get('/health', (req, res) => {
     res.status(200).json({
         status: 'UP',
@@ -77,7 +78,12 @@ app.get('/health', (req, res) => {
 
 // Single Page Application Fallback Route
 app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+    const indexPath = path.join(process.cwd(), 'public', 'index.html');
+    if (fs.existsSync(indexPath)) {
+        res.sendFile(indexPath);
+    } else {
+        res.sendFile(path.join(__dirname, 'public', 'index.html'));
+    }
 });
 
 // Global Error Handler
